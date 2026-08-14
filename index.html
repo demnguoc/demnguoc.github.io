@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<title>Trang chủ - Đếm ngược tựu trường</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --bg: #0b0b0d;
+    --card: #1c1c1f;
+    --card-2: #17171a;
+    --text: #ffffff;
+    --text-dim: #9a9a9f;
+    --orange: #ff8a3d;
+    --blue: #3d8bff;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html,body{
+    background: var(--bg);
+    color: var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100%;
+  }
+
+  .phone{
+    max-width: 480px;
+    margin: 0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding-bottom: 90px;
+    position:relative;
+  }
+
+  .statusbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding: 14px 24px 0;
+    font-size: 15px;
+    font-weight:600;
+    color:#fff;
+  }
+  .statusbar .icons{ display:flex; gap:6px; align-items:center; opacity:0.9; }
+  .statusbar svg{ width:18px; height:18px; }
+
+  header.page-title{
+    padding: 28px 24px 20px;
+  }
+  header.page-title h1{
+    font-size: 34px;
+    font-weight:800;
+  }
+
+  .content{
+    padding: 0 20px;
+    display:flex;
+    flex-direction:column;
+    gap: 16px;
+  }
+
+  .card{
+    background: var(--card);
+    border-radius: 20px;
+    padding: 20px;
+  }
+
+  .top-card{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+  }
+  .avatar-wrap{
+    position:relative;
+    width: 76px;
+    height: 76px;
+    flex-shrink:0;
+  }
+  .avatar-wrap img.avatar-bg{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    border-radius:50%;
+  }
+  .avatar-wrap img.frame{
+    position:absolute;
+    inset: -14px;
+    width: calc(100% + 28px);
+    height: calc(100% + 28px);
+    object-fit:contain;
+    pointer-events:none;
+  }
+  .top-info{ flex:1; min-width:0; }
+  .top-info h2{
+    font-size: 19px;
+    font-weight:700;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .top-info .status{
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .top-info .hint{
+    margin-top: 2px;
+    font-size: 13px;
+    color: var(--orange);
+    font-weight:600;
+  }
+  .btn-pill{
+    flex-shrink:0;
+    background: #2a2a2e;
+    color: #d8d8db;
+    border:none;
+    padding: 12px 18px;
+    border-radius: 999px;
+    font-weight:700;
+    font-size: 14px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn-pill.active{
+    background: var(--orange);
+    color: #1c1200;
+  }
+
+  .countdown-card{
+    text-align:left;
+  }
+  .countdown-card .label{
+    font-size: 14px;
+    color: var(--text-dim);
+    font-weight:500;
+  }
+  .countdown-card .value{
+    margin-top: 10px;
+    font-size: 26px;
+    font-weight:800;
+    color: var(--orange);
+    line-height:1.3;
+    font-variant-numeric: tabular-nums;
+  }
+  .countdown-card .target-date{
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .countdown-card.done .value{
+    color: #4ade80;
+  }
+
+  .bottom-nav{
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    max-width: 480px;
+    margin: 0 auto;
+    background: rgba(15,15,17,0.92);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 10px 0 20px;
+    display:flex;
+    justify-content:center;
+  }
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap: 6px;
+    color: var(--blue);
+    background: rgba(61,139,255,0.12);
+    border-radius: 999px;
+    padding: 8px 16px;
+  }
+  .nav-item svg{ width:18px; height:18px; }
+  .nav-item span{ font-size:13px; font-weight:700; }
+
+  .music-btn{
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--orange);
+    border: none;
+    padding: 3px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    z-index: 60;
+    overflow:hidden;
+  }
+  .music-btn img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .music-btn.playing img{ animation: spin 3s linear infinite; }
+  @keyframes spin{
+    from{ transform: rotate(0deg); }
+    to{ transform: rotate(360deg); }
+  }
+
+  .modal-backdrop{
+    position: fixed; inset:0;
+    background: rgba(0,0,0,0.65);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal{
+    background: var(--card);
+    border-radius: 18px;
+    padding: 26px 22px;
+    max-width: 320px;
+    text-align:center;
+  }
+  .modal img{
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 12px;
+    display:block;
+    border-radius: 12px;
+  }
+  .modal h3{ font-size: 18px; font-weight:800; margin-bottom:6px; }
+  .modal p{ font-size: 14px; color: var(--text-dim); margin-bottom:18px; line-height:1.5; }
+  .modal .actions{ display:flex; gap:10px; justify-content:center; }
+  .modal button{
+    font-weight:700;
+    font-size: 14px;
+    padding: 11px 18px;
+    border-radius: 999px;
+    border: none;
+    cursor:pointer;
+  }
+  .btn-allow{ background: var(--orange); color:#1c1200; }
+  .btn-deny{ background: transparent; color: var(--text-dim); border: 1px solid rgba(255,255,255,0.15) !important; }
+
+  @media (prefers-reduced-motion: reduce){
+    .music-btn.playing img{ animation:none; }
+  }
+
+  .footer-copy{
+    text-align:center;
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 4px 16px 0;
+    opacity: 0.7;
+  }
+
+  .now-playing{
+    text-align:center;
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 2px 16px 0;
+    min-height: 16px;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div class="statusbar">
+    <span id="clock">--:--</span>
+    <span class="icons">
+      <svg viewBox="0 0 20 14" fill="currentColor"><path d="M10 3c2.6 0 5 1 6.9 2.9l-1.4 1.4C13.9 5.7 12 5 10 5s-3.9.7-5.5 2.3L3.1 5.9C5 4 7.4 3 10 3zm0 4.5c1.3 0 2.6.5 3.5 1.5l-1.4 1.4C11.5 9.8 10.8 9.5 10 9.5s-1.5.3-2.1.9L6.5 9c.9-1 2.2-1.5 3.5-1.5zM10 12a1.2 1.2 0 110 2.4A1.2 1.2 0 0110 12z"/></svg>
+      <svg viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="20" height="10" rx="2.5" stroke="currentColor"/><rect x="3" y="3" width="14" height="6" rx="1" fill="currentColor"/><rect x="22" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+    </span>
+  </div>
+
+  <header class="page-title">
+    <h1>Đếm Ngược Ngày Đi Học</h1>
+  </header>
+
+  <div class="content">
+
+    <div class="card top-card">
+      <div class="avatar-wrap">
+        <img class="avatar-bg" src="https://i.imgur.com/Y3D71m8.jpeg" alt="avatar">
+        <img class="frame" src="https://gioithieuducanh.netlify.app/assets/img/mong-vuot-rong.png" alt="">
+      </div>
+      <div class="top-info">
+        <h2>Duc Anh Day</h2>
+        <div class="status">Đếm ngược đang chạy</div>
+        <div class="hint" id="topHint">Còn lại nhiều ngày</div>
+      </div>
+      <button class="btn-pill" id="musicToggleTop">🎵 Bật</button>
+    </div>
+
+    <div class="card countdown-card" id="countdownCard">
+      <div class="label">Thời gian còn lại tới 5/9</div>
+      <div class="value" id="countdownValue">Đang tính...</div>
+      <div class="target-date" id="targetDate"></div>
+    </div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.2l8 6.8v10.5h-5.5v-6.5h-5v6.5H4V10l8-6.8z"/></svg>
+      <span>Trang chủ</span>
+    </div>
+  </div>
+
+  <div class="footer-copy">©️ Tạo Website thuộc Duc Anh l'économie</div>
+  <div class="now-playing" id="nowPlaying"></div>
+
+  <audio id="bgMusic"></audio>
+
+  <div class="modal-backdrop" id="musicModal">
+    <div class="modal">
+      <img src="https://i.imgur.com/aGMqekz.gif" alt="">
+      <h3>Bật nhạc nền? 🎵</h3>
+      <p>Muốn Nghe Nhạc Không Eiu</p>
+      <div class="actions">
+        <button class="btn-allow" id="allowMusic">Cho phép luôn</button>
+        <button class="btn-deny" id="denyMusic">Để sau</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="music-btn" id="musicToggle" aria-label="Bật/tắt nhạc">
+    <img src="https://i.imgur.com/aGMqekz.gif" alt="">
+  </button>
+
+</div>
+
+<script>
+  function updateClock(){
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('clock').textContent = h + ':' + m;
+  }
+  updateClock();
+  setInterval(updateClock, 1000 * 15);
+
+  function getTargetDate(){
+    const now = new Date();
+    let year = now.getFullYear();
+    let target = new Date(year, 8, 5, 0, 0, 0);
+    if(now > target){
+      target = new Date(year + 1, 8, 5, 0, 0, 0);
+    }
+    return target;
+  }
+
+  const target = getTargetDate();
+  document.getElementById('targetDate').textContent =
+    'Mục tiêu: ' + target.toLocaleDateString('vi-VN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  const valueEl = document.getElementById('countdownValue');
+  const cardEl = document.getElementById('countdownCard');
+  const hintEl = document.getElementById('topHint');
+
+  function tick(){
+    const now = new Date();
+    const diff = target - now;
+
+    if(diff <= 0){
+      valueEl.textContent = '🎉 Hôm nay là ngày tựu trường!';
+      hintEl.textContent = 'Đã tới ngày tựu trường';
+      cardEl.classList.add('done');
+      clearInterval(timer);
+      return;
+    }
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff / (1000*60*60)) % 24);
+    const minutes = Math.floor((diff / (1000*60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    valueEl.textContent = days + ' ngày ' + hours + ' giờ ' + minutes + ' phút ' + seconds + ' giây';
+    hintEl.textContent = 'Còn ' + days + ' ngày nữa';
+  }
+
+  tick();
+  const timer = setInterval(tick, 1000);
+
+  const PLAYLIST = [
+    { file: 'bai-1.mp3', name: 'Chấp Niệm Trong Em (Remix)' },
+    { file: 'bai-2.mp3', name: 'Thủy Chung (Remix)' },
+    { file: 'bai-3.mp3', name: 'Bài Hát Khi Xưa Anh Viết' },
+    { file: 'bai-4.mp3', name: 'Nếu Cho Quay Thời Gian Trở Lại' },
+    { file: 'bai-5.mp3', name: 'Nhạc Quen Quen' }
+  ];
+
+  const audio = document.getElementById('bgMusic');
+  const modal = document.getElementById('musicModal');
+  const musicToggle = document.getElementById('musicToggle');
+  const musicToggleTop = document.getElementById('musicToggleTop');
+  const allowBtn = document.getElementById('allowMusic');
+  const denyBtn = document.getElementById('denyMusic');
+  const nowPlayingEl = document.getElementById('nowPlaying');
+
+  let lastIndex = -1;
+
+  function pickRandomIndex(){
+    if(PLAYLIST.length <= 1) return 0;
+    let idx;
+    do{
+      idx = Math.floor(Math.random() * PLAYLIST.length);
+    } while(idx === lastIndex);
+    return idx;
+  }
+
+  function playRandomTrack(){
+    const idx = pickRandomIndex();
+    lastIndex = idx;
+    const track = PLAYLIST[idx];
+    audio.src = track.file;
+    audio.play().catch(()=>{ });
+    nowPlayingEl.textContent = '♪ ' + track.name;
+  }
+
+  audio.addEventListener('ended', ()=>{
+    if(!audio.paused || musicToggle.classList.contains('playing')){
+      playRandomTrack();
+    }
+  });
+
+  function playMusic(){
+    if(!audio.src){
+      playRandomTrack();
+    }else{
+      audio.play().catch(()=>{});
+    }
+    musicToggle.classList.add('playing');
+    musicToggleTop.classList.add('active');
+    musicToggleTop.textContent = 'Tắt';
+  }
+  function pauseMusic(){
+    audio.pause();
+    musicToggle.classList.remove('playing');
+    musicToggleTop.classList.remove('active');
+    musicToggleTop.textContent = ' Bật🎵';
+    nowPlayingEl.textContent = '';
+  }
+  function toggleMusic(){
+    if(audio.paused){ playMusic(); } else { pauseMusic(); }
+  }
+
+  allowBtn.addEventListener('click', ()=>{
+    modal.style.display = 'none';
+    playMusic();
+  });
+  denyBtn.addEventListener('click', ()=>{
+    modal.style.display = 'none';
+  });
+
+  musicToggle.addEventListener('click', toggleMusic);
+  musicToggleTop.addEventListener('click', toggleMusic);
+</script>
+</body>
+</html>
